@@ -1,0 +1,11 @@
+{
+  "name": "gestione-ferie",
+  "version": "2.0.0",
+  "description": "Sistema gestione ferie e permessi aziendale",
+  "main": "server.js",
+  "engines": { "node": ">=22.0.0" },
+  "scripts": { "start": "node --experimental-sqlite server.js" },
+  "dependencies": {
+    "@libsql/client": "^0.14.0"
+  }
+}

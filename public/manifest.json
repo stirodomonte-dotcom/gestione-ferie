@@ -1,0 +1,14 @@
+{
+  "name": "Gestione Ferie & Permessi",
+  "short_name": "Ferie",
+  "description": "Sistema aziendale gestione ferie e permessi",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#1a2744",
+  "theme_color": "#1a2744",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "lang": "it"
+}

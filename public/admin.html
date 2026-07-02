@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin — Gestione Ferie</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a2744">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:var(--oro)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+        <div><div class="sidebar-title">Admin Panel</div><div class="sidebar-sub">Gestione Ferie</div></div>
+      </div>
+    </div>
+    <div class="sidebar-user flex items-center gap-3" style="padding:1rem 1.5rem">
+      <div class="user-avatar" id="avatar">A</div>
+      <div><div class="user-name" id="sidebar-nome">Admin</div><div class="user-role">Amministratore</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Gestione</div>
+      <div class="nav-item active" data-page="richieste" onclick="showPage('richieste')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg> Richieste <span id="badge-attesa" class="badge badge-attesa" style="margin-left:auto;display:none"></span></div>
+      <div class="nav-item" data-page="calendario" onclick="showPage('calendario')"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z"/></svg> Calendario</div>
+      <div class="nav-item" data-page="dipendenti" onclick="showPage('dipendenti')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Dipendenti</div>
+      <div class="nav-section">Report</div>
+      <div class="nav-item" data-page="report" onclick="showPage('report')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg> Report</div>
+      <div class="nav-item" data-page="festivita" onclick="showPage('festivita')"><svg viewBox="0 0 24 24"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg> Festività</div>
+      <div class="nav-section">Account</div>
+      <div class="nav-item" onclick="location.href='/dashboard'"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Portale dipendenti</div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="location.href='/logout'"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M17 7l-1.4 1.4L18.2 11H8v2h10.2l-2.6 2.6L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Esci</button></div>
+  </aside>
+
+  <main class="main">
+    <!-- Richieste -->
+    <div id="page-richieste">
+      <div class="topbar">
+        <div><div class="topbar-title">Richieste</div><div class="topbar-breadcrumb">Approva o rifiuta le richieste</div></div>
+        <div class="flex gap-2">
+          <select id="f-stato" class="btn btn-outline btn-sm" style="padding:.35rem .7rem" onchange="caricaRichieste()"><option value="">Tutti gli stati</option><option value="in_attesa">In attesa</option><option value="approvata">Approvate</option><option value="rifiutata">Rifiutate</option></select>
+          <select id="f-tipo" class="btn btn-outline btn-sm" style="padding:.35rem .7rem" onchange="caricaRichieste()"><option value="">Tutti i tipi</option><option value="ferie">Ferie</option><option value="permesso">Permesso</option></select>
+        </div>
+      </div>
+      <div class="content"><div class="card"><div id="tabella-richieste" class="table-wrap"></div></div></div>
+    </div>
+
+    <!-- Calendario -->
+    <div id="page-calendario" class="hidden">
+      <div class="topbar"><div class="topbar-title">Calendario aziendale</div></div>
+      <div class="content"><div class="card"><div class="card-body"><div id="calendar-admin"></div></div></div></div>
+    </div>
+
+    <!-- Dipendenti -->
+    <div id="page-dipendenti" class="hidden">
+      <div class="topbar">
+        <div><div class="topbar-title">Dipendenti</div></div>
+        <button class="btn btn-primary" onclick="apriNuovoDip()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuovo dipendente</button>
+      </div>
+      <div class="content"><div class="card"><div id="tabella-dipendenti" class="table-wrap"></div></div></div>
+    </div>
+
+    <!-- Report -->
+    <div id="page-report" class="hidden">
+      <div class="topbar"><div class="topbar-title">Report & Statistiche</div></div>
+      <div class="content">
+        <div class="card mb-6">
+          <div class="card-body">
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end">
+              <div class="form-group"><label>Tipo</label><div class="flex gap-2"><button class="tab-btn active" id="tab-m" onclick="switchTab('mensile')">Mensile</button><button class="tab-btn" id="tab-a" onclick="switchTab('annuale')">Annuale</button></div></div>
+              <div class="form-group"><label>Anno</label><select id="rep-anno" style="width:120px"></select></div>
+              <div class="form-group" id="mese-group"><label>Mese</label><select id="rep-mese" style="width:150px"><option value="01">Gennaio</option><option value="02">Febbraio</option><option value="03">Marzo</option><option value="04">Aprile</option><option value="05">Maggio</option><option value="06">Giugno</option><option value="07">Luglio</option><option value="08">Agosto</option><option value="09">Settembre</option><option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option></select></div>
+              <button class="btn btn-primary" onclick="generaReport()">📊 Genera report</button>
+            </div>
+          </div>
+        </div>
+        <div id="report-contenuto"></div>
+      </div>
+    </div>
+
+    <!-- Festività -->
+    <div id="page-festivita" class="hidden">
+      <div class="topbar">
+        <div><div class="topbar-title">Festività</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-festivita')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Aggiungi</button>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Festività nazionali</span><select id="festivita-anno" onchange="caricaFestivita()" class="btn btn-outline btn-sm" style="padding:.35rem .7rem"></select></div>
+          <div id="tabella-festivita" class="table-wrap"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal approvazione -->
+<div class="modal-overlay" id="modal-approva">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="approva-title">Gestisci richiesta</span><button class="modal-close" onclick="closeModal('modal-approva')"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--grigio)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+    <div class="modal-body"><div id="approva-det" style="background:var(--sfondo);padding:1rem;border-radius:8px;margin-bottom:1rem;font-size:.9rem"></div><div class="form-group"><label>Note admin</label><textarea id="note-admin" placeholder="Motivazione..."></textarea></div></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-approva')">Annulla</button><button class="btn btn-danger" onclick="gestisci('rifiutata')">✗ Rifiuta</button><button class="btn btn-success" onclick="gestisci('approvata')">✓ Approva</button></div>
+  </div>
+</div>
+
+<!-- Modal dipendente -->
+<div class="modal-overlay" id="modal-dip">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><span class="modal-title" id="dip-title">Nuovo dipendente</span><button class="modal-close" onclick="closeModal('modal-dip')"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--grigio)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+    <div class="modal-body">
+      <div id="msg-dip"></div>
+      <input type="hidden" id="dip-id">
+      <div class="form-grid">
+        <div class="form-group"><label>Nome *</label><input id="dip-nome"></div>
+        <div class="form-group"><label>Cognome *</label><input id="dip-cognome"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="dip-email"></div>
+        <div class="form-group"><label>Username *</label><input id="dip-username"></div>
+        <div class="form-group" id="pwd-group"><label>Password *</label><input id="dip-password"></div>
+        <div class="form-group"><label>Reparto</label><input id="dip-reparto"></div>
+        <div class="form-group"><label>Ruolo</label><select id="dip-ruolo"><option value="dipendente">Dipendente</option><option value="admin">Amministratore</option></select></div>
+        <div class="form-group"><label>Data assunzione</label><input type="date" id="dip-assunzione"></div>
+        <div class="form-group"><label>Giorni ferie/anno</label><input type="number" id="dip-ferie" value="26"></div>
+        <div class="form-group"><label>Giorni permesso/anno</label><input type="number" id="dip-permesso" value="8"></div>
+        <div class="form-group" id="attivo-group" style="display:none"><label>Stato</label><select id="dip-attivo"><option value="1">Attivo</option><option value="0">Disattivato</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-dip')">Annulla</button><button class="btn btn-primary" onclick="salvaDipendente()">Salva</button></div>
+  </div>
+</div>
+
+<!-- Modal reset pwd -->
+<div class="modal-overlay" id="modal-pwd">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><span class="modal-title">Reset password</span><button class="modal-close" onclick="closeModal('modal-pwd')"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--grigio)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+    <div class="modal-body"><input type="hidden" id="reset-id"><div class="form-group"><label>Nuova password</label><input id="reset-pwd" placeholder="Min. 6 caratteri"></div></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-pwd')">Annulla</button><button class="btn btn-warning" onclick="resetPwd()">Imposta</button></div>
+  </div>
+</div>
+
+<!-- Modal festività -->
+<div class="modal-overlay" id="modal-festivita">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><span class="modal-title">Aggiungi festività</span><button class="modal-close" onclick="closeModal('modal-festivita')"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--grigio)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+    <div class="modal-body"><div class="form-group"><label>Data</label><input type="date" id="fest-data"></div><div class="form-group mt-3"><label>Nome</label><input id="fest-nome" placeholder="Es: Patrono cittadino"></div></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-festivita')">Annulla</button><button class="btn btn-primary" onclick="aggiungiFestivita()">Aggiungi</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/offline.js"></script>
+<script>
+let richCorrente=null,calAdmin=null,repTab='mensile';
+
+async function init(){
+  const me=await apiGet('/api/me');
+  document.getElementById('sidebar-nome').textContent=`${me.nome} ${me.cognome}`;
+  document.getElementById('avatar').textContent=(me.nome[0]+me.cognome[0]).toUpperCase();
+  const anno=new Date().getFullYear();
+  const ae=document.getElementById('rep-anno'),af=document.getElementById('festivita-anno');
+  for(let y=anno+1;y>=anno-3;y--){ae.innerHTML+=`<option value="${y}"${y===anno?' selected':''}>${y}</option>`;af.innerHTML+=`<option value="${y}"${y===anno?' selected':''}>${y}</option>`;}
+  document.getElementById('rep-mese').value=String(new Date().getMonth()+1).padStart(2,'0');
+  caricaRichieste();
+}
+
+function showPage(page){document.querySelectorAll('[id^="page-"]').forEach(el=>el.classList.add('hidden'));document.getElementById(`page-${page}`).classList.remove('hidden');setActiveNav(page);if(page==='richieste')caricaRichieste();if(page==='dipendenti')caricaDipendenti();if(page==='calendario'&&!calAdmin)initCalAdmin();if(page==='festivita')caricaFestivita();}
+
+async function caricaRichieste(){
+  const stato=document.getElementById('f-stato')?.value||'',tipo=document.getElementById('f-tipo')?.value||'';
+  let url='/api/admin/richieste';const p=new URLSearchParams();if(stato)p.set('stato',stato);if(tipo)p.set('tipo',tipo);if([...p].length)url+='?'+p;
+  const richieste=await apiGet(url);
+  const inAttesa=richieste.filter(r=>r.stato==='in_attesa').length;
+  const badge=document.getElementById('badge-attesa');badge.textContent=inAttesa||'';badge.style.display=inAttesa?'':'none';
+  const el=document.getElementById('tabella-richieste');
+  if(!richieste.length){el.innerHTML='<div class="empty-state"><p>Nessuna richiesta</p></div>';return;}
+  el.innerHTML=`<table><thead><tr><th>Dipendente</th><th>Reparto</th><th>Tipo</th><th>Dal</th><th>Al</th><th>Giorni</th><th>Stato</th><th>Richiesto il</th><th>Azioni</th></tr></thead><tbody>${richieste.map(r=>`<tr><td><strong>${r.dipendente_nome}</strong></td><td class="text-sm text-grigio">${r.reparto||'-'}</td><td>${badgeTipo(r.tipo)}</td><td>${fmtData(r.data_inizio)}</td><td>${fmtData(r.data_fine)}</td><td><strong>${fmtGiorni(r.giorni)}</strong></td><td>${badgeStato(r.stato)}</td><td class="text-sm text-grigio">${fmtData(r.created_at?.slice(0,10))}</td><td><button class="btn btn-primary btn-sm" onclick='apriApprova(${JSON.stringify(r)})'>Gestisci</button></td></tr>`).join('')}</tbody></table>`;
+}
+
+function apriApprova(r){richCorrente=r;document.getElementById('approva-title').textContent=`${r.tipo==='ferie'?'🌴 Ferie':'⏰ Permesso'} — ${r.dipendente_nome}`;document.getElementById('approva-det').innerHTML=`<div style="display:grid;gap:.4rem"><div><strong>Periodo:</strong> ${fmtData(r.data_inizio)} → ${fmtData(r.data_fine)} (${fmtGiorni(r.giorni)})</div><div><strong>Stato:</strong> ${badgeStato(r.stato)}</div>${r.note_dipendente?`<div><strong>Note:</strong> ${r.note_dipendente}</div>`:''}</div>`;document.getElementById('note-admin').value=r.note_admin||'';openModal('modal-approva');}
+
+async function gestisci(stato){
+  try{await apiPut(`/api/admin/richieste/${richCorrente.id}`,{stato,note_admin:document.getElementById('note-admin').value});closeModal('modal-approva');toast(stato==='approvata'?'✓ Approvata':'Rifiutata',stato==='approvata'?'success':'error');caricaRichieste();if(calAdmin)calAdmin.refetchEvents();}
+  catch(e){toast(e.message,'error');}
+}
+
+let dipEdit=false;
+async function caricaDipendenti(){
+  const dips=await apiGet('/api/admin/dipendenti');const el=document.getElementById('tabella-dipendenti');
+  if(!dips.length){el.innerHTML='<div class="empty-state"><p>Nessun dipendente</p></div>';return;}
+  el.innerHTML=`<table><thead><tr><th>Nominativo</th><th>Username</th><th>Reparto</th><th>Ruolo</th><th>Ferie</th><th>Permessi</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>${dips.map(d=>`<tr><td><strong>${d.cognome} ${d.nome}</strong><div class="text-xs text-grigio">${d.email}</div></td><td class="text-sm">${d.username}</td><td class="text-sm">${d.reparto||'-'}</td><td>${d.ruolo==='admin'?'<span class="badge" style="background:#fef3c7;color:#78350f">Admin</span>':'<span class="badge badge-ferie">Dipendente</span>'}</td><td class="text-sm">${d.giorni_ferie}gg</td><td class="text-sm">${d.giorni_permesso}gg</td><td>${d.attivo?'<span class="badge badge-approvata">Attivo</span>':'<span class="badge badge-rifiutata">Disattivo</span>'}</td><td><div class="flex gap-2"><button class="btn btn-outline btn-sm" onclick='modDip(${JSON.stringify(d)})'>Modifica</button><button class="btn btn-warning btn-sm" onclick="apriResetPwd(${d.id})">Reset pwd</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function apriNuovoDip(){dipEdit=false;document.getElementById('dip-title').textContent='Nuovo dipendente';document.getElementById('dip-id').value='';['dip-nome','dip-cognome','dip-email','dip-username','dip-password','dip-reparto'].forEach(id=>document.getElementById(id).value='');document.getElementById('dip-ferie').value=26;document.getElementById('dip-permesso').value=8;document.getElementById('dip-ruolo').value='dipendente';document.getElementById('pwd-group').style.display='';document.getElementById('attivo-group').style.display='none';document.getElementById('msg-dip').innerHTML='';openModal('modal-dip');}
+
+function modDip(d){dipEdit=true;document.getElementById('dip-title').textContent=`Modifica: ${d.nome} ${d.cognome}`;document.getElementById('dip-id').value=d.id;document.getElementById('dip-nome').value=d.nome;document.getElementById('dip-cognome').value=d.cognome;document.getElementById('dip-email').value=d.email;document.getElementById('dip-username').value=d.username;document.getElementById('dip-reparto').value=d.reparto||'';document.getElementById('dip-ferie').value=d.giorni_ferie;document.getElementById('dip-permesso').value=d.giorni_permesso;document.getElementById('dip-ruolo').value=d.ruolo;document.getElementById('dip-attivo').value=d.attivo;document.getElementById('pwd-group').style.display='none';document.getElementById('attivo-group').style.display='';document.getElementById('msg-dip').innerHTML='';openModal('modal-dip');}
+
+async function salvaDipendente(){
+  const id=document.getElementById('dip-id').value;
+  const body={nome:document.getElementById('dip-nome').value,cognome:document.getElementById('dip-cognome').value,email:document.getElementById('dip-email').value,username:document.getElementById('dip-username').value,password:document.getElementById('dip-password').value,reparto:document.getElementById('dip-reparto').value,ruolo:document.getElementById('dip-ruolo').value,giorni_ferie:document.getElementById('dip-ferie').value,giorni_permesso:document.getElementById('dip-permesso').value,data_assunzione:document.getElementById('dip-assunzione').value,attivo:document.getElementById('dip-attivo').value||1};
+  const msg=document.getElementById('msg-dip');
+  try{if(dipEdit)await apiPut(`/api/admin/dipendenti/${id}`,body);else await apiPost('/api/admin/dipendenti',body);closeModal('modal-dip');toast(dipEdit?'Dipendente aggiornato':'Dipendente aggiunto');caricaDipendenti();}
+  catch(e){msg.innerHTML=`<div class="alert alert-error">${e.message}</div>`;}
+}
+
+function apriResetPwd(id){document.getElementById('reset-id').value=id;document.getElementById('reset-pwd').value='';openModal('modal-pwd');}
+async function resetPwd(){try{await apiPost(`/api/admin/dipendenti/${document.getElementById('reset-id').value}/reset-password`,{nuova_password:document.getElementById('reset-pwd').value});closeModal('modal-pwd');toast('Password reimpostata');}catch(e){toast(e.message,'error');}}
+
+function initCalAdmin(){calAdmin=new FullCalendar.Calendar(document.getElementById('calendar-admin'),{locale:'it',initialView:'dayGridMonth',headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,listMonth'},events:async(info,success)=>success(await apiGet(`/api/admin/calendario?start=${info.startStr.slice(0,10)}&end=${info.endStr.slice(0,10)}`)),eventClick:info=>{const e=info.event;if(e.extendedProps.tipo==='festivita')return;const r={id:e.id,dipendente_nome:e.title.replace(/🌴|⏰/g,'').trim(),tipo:e.extendedProps.tipo,stato:e.extendedProps.stato,data_inizio:e.startStr,data_fine:new Date(e.end.getTime()-86400000).toISOString().slice(0,10),giorni:e.extendedProps.giorni,note_admin:''};apriApprova(r);},dayMaxEvents:5,height:650});calAdmin.render();}
+
+function switchTab(tab){repTab=tab;document.getElementById('tab-m').classList.toggle('active',tab==='mensile');document.getElementById('tab-a').classList.toggle('active',tab==='annuale');document.getElementById('mese-group').style.display=tab==='mensile'?'':'none';}
+
+async function generaReport(){
+  const anno=document.getElementById('rep-anno').value,mese=document.getElementById('rep-mese').value;
+  const el=document.getElementById('report-contenuto');showLoader(el,'Generazione...');
+  try{
+    if(repTab==='mensile'){const d=await apiGet(`/api/admin/report/mensile?anno=${anno}&mese=${mese}`);el.innerHTML=`<div class="card"><div class="card-header"><span class="card-title">Report ${mesi[parseInt(d.mese)-1]} ${d.anno}</span></div><div class="table-wrap"><table><thead><tr><th>Dipendente</th><th>Reparto</th><th>Ferie mese</th><th>Perm. mese</th><th>Ferie anno</th><th>Ferie res.</th><th>Perm. anno</th><th>Perm. res.</th></tr></thead><tbody>${d.dipendenti.map(p=>`<tr><td><strong>${p.cognome} ${p.nome}</strong></td><td class="text-sm text-grigio">${p.reparto}</td><td>${p.ferie_mese>0?`<strong style="color:var(--verde)">${(+p.ferie_mese).toFixed(1).replace('.0','')} gg</strong>`:'<span class="text-grigio">-</span>'}</td><td>${p.permesso_mese>0?`<strong style="color:#7c3aed">${(+p.permesso_mese).toFixed(1).replace('.0','')} gg</strong>`:'<span class="text-grigio">-</span>'}</td><td>${(+p.ferie_anno||0).toFixed(1).replace('.0','')}/${p.giorni_ferie_spettanti}</td><td>${saldo(p.ferie_residue)}</td><td>${(+p.permesso_anno||0).toFixed(1).replace('.0','')}/${p.giorni_permesso_spettanti}</td><td>${saldo(p.permesso_residuo)}</td></tr>`).join('')}</tbody></table></div></div>`;}
+    else{const d=await apiGet(`/api/admin/report/annuale?anno=${anno}`);el.innerHTML=`<div class="card"><div class="card-header"><span class="card-title">Report annuale ${d.anno}</span></div><div class="table-wrap" style="overflow-x:auto"><table><thead><tr><th>Dipendente</th><th>Reparto</th>${d.mesi.map(m=>`<th style="min-width:50px">${m}</th>`).join('')}<th>Tot.Ferie</th><th>Ferie res.</th><th>Tot.Perm.</th><th>Perm.res.</th></tr></thead><tbody>${d.dipendenti.map(p=>`<tr><td><strong>${p.cognome} ${p.nome}</strong></td><td class="text-sm text-grigio">${p.reparto}</td>${p.ferie_per_mese.map((f,i)=>`<td style="text-align:center;font-size:.72rem">${f>0||p.permesso_per_mese[i]>0?`${f>0?`<div style="color:var(--verde)">F:${f.toFixed(1).replace('.0','')} </div>`:''}${p.permesso_per_mese[i]>0?`<div style="color:#7c3aed">P:${p.permesso_per_mese[i].toFixed(1).replace('.0','')}</div>`:''}`:'<span class="text-grigio">-</span>'}</td>`).join('')}<td><strong>${p.totale_ferie.toFixed(1).replace('.0','')} gg</strong></td><td>${saldo(p.ferie_residue)}</td><td><strong>${p.totale_permesso.toFixed(1).replace('.0','')} gg</strong></td><td>${saldo(p.permesso_residuo)}</td></tr>`).join('')}</tbody></table></div></div>`;}
+  }catch(e){el.innerHTML=`<div class="alert alert-error">${e.message}</div>`;}
+}
+
+function saldo(v){const n=parseFloat(v)||0;const cl=n>5?'color:var(--verde)':n>0?'color:var(--giallo)':'color:var(--rosso)';return`<strong style="${cl}">${n.toFixed(1).replace('.0','')} gg</strong>`;}
+
+async function caricaFestivita(){const anno=document.getElementById('festivita-anno').value;const feste=await apiGet(`/api/admin/festivita?anno=${anno}`);const el=document.getElementById('tabella-festivita');if(!feste.length){el.innerHTML='<div class="empty-state"><p>Nessuna festività</p></div>';return;}el.innerHTML=`<table><thead><tr><th>Data</th><th>Nome</th><th></th></tr></thead><tbody>${feste.map(f=>`<tr><td><strong>${fmtData(f.data)}</strong> <span class="text-xs text-grigio">(${['Dom','Lun','Mar','Mer','Gio','Ven','Sab'][new Date(f.data+'T12:00:00').getDay()]})</span></td><td>${f.nome}</td><td><button class="btn btn-danger btn-sm" onclick="elimFestivita(${f.id})">Elimina</button></td></tr>`).join('')}</tbody></table>`;}
+
+async function aggiungiFestivita(){const data=document.getElementById('fest-data').value,nome=document.getElementById('fest-nome').value;if(!data||!nome){toast('Inserire data e nome','error');return;}try{await apiPost('/api/admin/festivita',{data,nome});closeModal('modal-festivita');toast('Festività aggiunta');caricaFestivita();}catch(e){toast(e.message,'error');}}
+async function elimFestivita(id){if(!confirm('Eliminare?'))return;await apiDel(`/api/admin/festivita/${id}`);toast('Eliminata');caricaFestivita();}
+
+init();
+</script>
+</body>
+</html>

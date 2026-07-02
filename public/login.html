@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Accesso — Gestione Ferie</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a2744">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blu:#1a2744;--blu2:#243561;--oro:#c9a84c;--sfondo:#f2efe8;--grigio:#6b7280;--errore:#dc2626;}
+body{min-height:100vh;display:flex;background:var(--blu);font-family:'DM Sans',sans-serif}
+.sfondo{position:fixed;inset:0;background:linear-gradient(135deg,#0f1a33 0%,#1a2744 50%,#243561 100%)}
+.container{position:relative;z-index:10;width:100%;display:flex;align-items:center;justify-content:center;padding:2rem}
+.card{background:rgba(248,246,241,.97);border-radius:20px;padding:3rem 3.5rem;width:100%;max-width:440px;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.logo{text-align:center;margin-bottom:2.5rem}
+.logo-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--blu),var(--blu2));border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(26,39,68,.3)}
+.logo-icon svg{width:32px;height:32px;fill:var(--oro)}
+h1{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--blu);margin-bottom:.3rem}
+.subtitle{color:var(--grigio);font-size:.9rem;font-weight:300}
+.form-group{margin-bottom:1.4rem}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--blu);margin-bottom:.5rem;letter-spacing:.03em;text-transform:uppercase}
+input{width:100%;padding:.85rem 1.1rem;border:2px solid #e5e0d8;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--blu);background:#fff;transition:all .2s;outline:none}
+input:focus{border-color:var(--blu);box-shadow:0 0 0 4px rgba(26,39,68,.1)}
+.btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--blu),var(--blu2));color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .25s;margin-top:.5rem}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,39,68,.35)}
+.errore{background:#fef2f2;border:1px solid #fecaca;color:var(--errore);padding:.8rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:1.2rem}
+.footer-text{text-align:center;margin-top:2rem;color:var(--grigio);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="sfondo"></div>
+<div class="container">
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z"/></svg></div>
+      <h1>Gestione Ferie</h1>
+      <p class="subtitle">Accedi con le tue credenziali aziendali</p>
+    </div>
+    <div id="errore-box" style="display:none" class="errore"></div>
+    <form method="POST" action="/login">
+      <div class="form-group"><label>Username</label><input type="text" name="username" placeholder="nome.cognome" autocomplete="username" required></div>
+      <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required></div>
+      <button type="submit" class="btn">Accedi →</button>
+    </form>
+    <p class="footer-text">© 2025 Sistema Gestione Presenze</p>
+  </div>
+</div>
+<script>
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('e')){const b=document.getElementById('errore-box');b.textContent=decodeURIComponent(p.get('e').replace(/\+/g,' '));b.style.display='block';}
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>

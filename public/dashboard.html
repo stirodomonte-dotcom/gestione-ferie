@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard — Gestione Ferie</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a2744">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z"/></svg></div>
+        <div><div class="sidebar-title">Gestione Ferie</div><div class="sidebar-sub">Portale Dipendenti</div></div>
+      </div>
+    </div>
+    <div class="sidebar-user flex items-center gap-3" style="padding:1rem 1.5rem">
+      <div class="user-avatar" id="avatar">?</div>
+      <div><div class="user-name" id="sidebar-nome">Caricamento...</div><div class="user-role" id="sidebar-ruolo">Dipendente</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Navigazione</div>
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard</div>
+      <div class="nav-item" data-page="calendario" onclick="showPage('calendario')"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z"/></svg> Calendario</div>
+      <div class="nav-item" data-page="richieste" onclick="showPage('richieste')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg> Le mie richieste</div>
+      <div class="nav-section">Profilo</div>
+      <div class="nav-item" data-page="profilo" onclick="showPage('profilo')"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg> Profilo & Password</div>
+      <div id="nav-admin" class="nav-item hidden" onclick="location.href='/admin'"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg> Pannello Admin</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="net-indicator" style="padding:.4rem 0 .6rem;font-size:.75rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:.4rem"></div>
+      <button class="btn-logout" onclick="location.href='/logout'"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M17 7l-1.4 1.4L18.2 11H8v2h10.2l-2.6 2.6L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Esci</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Dashboard -->
+    <div id="page-dashboard">
+      <div class="topbar">
+        <div><div class="topbar-title">Dashboard</div><div class="topbar-breadcrumb">Benvenuto nel portale ferie</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-richiesta')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuova Richiesta</button>
+      </div>
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#1e40af"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div><div><div class="stat-value" id="stat-ferie-rimanenti">-</div><div class="stat-label">Ferie residue (gg)</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:#dcfce7;color:#16a34a"><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></div><div><div class="stat-value" id="stat-ferie-usate">-</div><div class="stat-label">Ferie usate (gg)</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:#ede9fe;color:#7c3aed"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div><div><div class="stat-value" id="stat-permesso-rimanenti">-</div><div class="stat-label">Permessi residui (gg)</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;color:#d97706"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div><div><div class="stat-value" id="stat-in-attesa">-</div><div class="stat-label">In attesa</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Ultime richieste</span><button class="btn btn-outline btn-sm" onclick="showPage('richieste')">Vedi tutte →</button></div>
+          <div id="ultime-richieste" class="table-wrap"><div style="padding:1.5rem;text-align:center;color:var(--grigio)">Caricamento...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendario -->
+    <div id="page-calendario" class="hidden">
+      <div class="topbar">
+        <div><div class="topbar-title">Calendario</div><div class="topbar-breadcrumb">Ferie tue e dei colleghi</div></div>
+        <div class="flex gap-2">
+          <span class="badge" style="background:#e8f5e9;color:#1b5e20">🟢 Tue ferie</span>
+          <span class="badge" style="background:#e3f2fd;color:#0d47a1">🔵 Tuoi permessi</span>
+          <span class="badge" style="background:#f5f5f5;color:#424242">⚫ Colleghi</span>
+        </div>
+      </div>
+      <div class="content"><div class="card"><div class="card-body"><div id="calendar"></div></div></div></div>
+    </div>
+
+    <!-- Richieste -->
+    <div id="page-richieste" class="hidden">
+      <div class="topbar">
+        <div><div class="topbar-title">Le mie richieste</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-richiesta')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Nuova</button>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Storico richieste</span>
+            <div class="flex gap-2">
+              <select id="filtro-tipo" class="btn btn-outline btn-sm" style="padding:.35rem .7rem" onchange="caricaRichieste()"><option value="">Tutti i tipi</option><option value="ferie">Ferie</option><option value="permesso">Permesso</option></select>
+              <select id="filtro-stato" class="btn btn-outline btn-sm" style="padding:.35rem .7rem" onchange="caricaRichieste()"><option value="">Tutti gli stati</option><option value="in_attesa">In attesa</option><option value="approvata">Approvate</option><option value="rifiutata">Rifiutate</option></select>
+            </div>
+          </div>
+          <div id="tabella-richieste" class="table-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profilo -->
+    <div id="page-profilo" class="hidden">
+      <div class="topbar"><div class="topbar-title">Profilo</div></div>
+      <div class="content">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div class="card"><div class="card-header"><span class="card-title">Informazioni</span></div><div class="card-body" id="profilo-info"></div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Cambia password</span></div>
+            <div class="card-body">
+              <div id="msg-password"></div>
+              <div class="form-group mt-2"><label>Password attuale</label><input type="password" id="pwd-vecchia"></div>
+              <div class="form-group mt-3"><label>Nuova password</label><input type="password" id="pwd-nuova"></div>
+              <div class="form-group mt-3"><label>Conferma</label><input type="password" id="pwd-conferma"></div>
+              <button class="btn btn-primary w-full mt-4" onclick="cambiaPassword()">Aggiorna password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal Nuova Richiesta -->
+<div class="modal-overlay" id="modal-richiesta">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">📋 Nuova Richiesta</span><button class="modal-close" onclick="closeModal('modal-richiesta')"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--grigio)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+    <div class="modal-body">
+      <div id="msg-richiesta"></div>
+      <div class="form-group mb-4"><label>Tipo</label><select id="tipo-richiesta" onchange="aggiornaTipo()"><option value="ferie">🌴 Ferie</option><option value="permesso">⏰ Permesso</option></select></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Data inizio</label><input type="date" id="data-inizio" onchange="calcolaGiorni()"></div>
+        <div class="form-group"><label>Data fine</label><input type="date" id="data-fine" onchange="calcolaGiorni()"></div>
+      </div>
+      <div id="ore-group" class="form-group mt-3 hidden"><label>Ore permesso</label>
+        <select id="ore-permesso" onchange="calcolaGiorni()"><option value="1">1 ora</option><option value="2">2 ore</option><option value="3">3 ore</option><option value="4">4 ore (mezza giornata)</option><option value="6">6 ore</option><option value="8">8 ore (intera giornata)</option></select>
+      </div>
+      <div id="giorni-calcolati" class="alert alert-info mt-3 hidden"></div>
+      <div class="form-group mt-3"><label>Note (opzionale)</label><textarea id="note-richiesta" placeholder="Es: ferie estive..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-richiesta')">Annulla</button>
+      <button class="btn btn-primary" id="btn-invia" onclick="inviaRichiesta()">Invia richiesta</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/offline.js"></script>
+<script>
+let utente=null,calendar=null,tutteRichieste=[];
+
+window.addEventListener('gf:synced',()=>{init();if(calendar)calendar.refetchEvents();});
+
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;if(!window.matchMedia('(display-mode: standalone)').matches)showInstallBar();});
+function showInstallBar(){if(document.getElementById('pwa-bar'))return;const b=document.createElement('div');b.id='pwa-bar';b.className='pwa-install-bar';b.innerHTML='<span style="flex:1">📱 Installa come app sul tuo dispositivo</span><button onclick="installPWA()">Installa</button><button class="dismiss" onclick="this.parentElement.remove()">✕</button>';document.body.appendChild(b);}
+async function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();const{outcome}=await deferredInstall.userChoice;if(outcome==='accepted'){document.getElementById('pwa-bar')?.remove();toast('✓ App installata!');}deferredInstall=null;}
+
+function aggiornaIndicatoreRete(online){const ind=document.getElementById('net-indicator');if(ind)ind.innerHTML=`<span class="offline-indicator ${online?'online':'offline'}"></span>${online?'Connesso al server':'Offline — dati in cache'}`;}
+OfflineManager.onStatusChange(aggiornaIndicatoreRete);
+
+async function init(){
+  try{
+    utente=await apiGet('/api/me');
+    document.getElementById('sidebar-nome').textContent=`${utente.nome} ${utente.cognome}`;
+    document.getElementById('sidebar-ruolo').textContent=utente.ruolo==='admin'?'Amministratore':(utente.reparto||'Dipendente');
+    document.getElementById('avatar').textContent=(utente.nome[0]+utente.cognome[0]).toUpperCase();
+    if(utente.ruolo==='admin')document.getElementById('nav-admin').classList.remove('hidden');
+    aggiornaIndicatoreRete(OfflineManager.isOnline());
+    aggiornaStat();caricaRichieste();inizioData();
+  }catch(e){console.error(e);}
+}
+
+function aggiornaStat(){
+  document.getElementById('stat-ferie-rimanenti').textContent=Math.max(0,utente.ferie_rimanenti||0).toFixed(1).replace('.0','');
+  document.getElementById('stat-ferie-usate').textContent=(utente.ferie_usate||0).toFixed(1).replace('.0','');
+  document.getElementById('stat-permesso-rimanenti').textContent=Math.max(0,utente.permesso_rimanenti||0).toFixed(1).replace('.0','');
+}
+
+function inizioData(){const oggi=new Date().toISOString().slice(0,10);document.getElementById('data-inizio').min=oggi;document.getElementById('data-fine').min=oggi;document.getElementById('data-inizio').value=oggi;document.getElementById('data-fine').value=oggi;}
+
+async function caricaRichieste(){
+  const tipo=document.getElementById('filtro-tipo')?.value||'';
+  const stato=document.getElementById('filtro-stato')?.value||'';
+  tutteRichieste=await apiGet('/api/richieste');
+  let filtered=tutteRichieste;
+  if(tipo)filtered=filtered.filter(r=>r.tipo===tipo);
+  if(stato)filtered=filtered.filter(r=>r.stato===stato);
+  const inAttesa=tutteRichieste.filter(r=>r.stato==='in_attesa').length;
+  const elStat=document.getElementById('stat-in-attesa');if(elStat)elStat.textContent=inAttesa;
+  const renderTable=(richieste,max=999)=>{
+    if(!richieste.length)return'<div class="empty-state"><p>Nessuna richiesta trovata</p></div>';
+    return`<table><thead><tr><th>Tipo</th><th>Dal</th><th>Al</th><th>Giorni</th><th>Stato</th><th>Note admin</th><th></th></tr></thead><tbody>${richieste.slice(0,max).map(r=>`<tr><td>${badgeTipo(r.tipo)}</td><td>${fmtData(r.data_inizio)}</td><td>${fmtData(r.data_fine)}</td><td><strong>${fmtGiorni(r.giorni)}</strong></td><td>${badgeStato(r.stato)}</td><td class="text-sm text-grigio">${r.note_admin||'-'}</td><td>${r.stato==='in_attesa'?`<button class="btn btn-danger btn-sm" onclick="eliminaRichiesta(${r.id})">Elimina</button>`:''}</td></tr>`).join('')}</tbody></table>`;
+  };
+  const wrap=document.getElementById('tabella-richieste');const ultime=document.getElementById('ultime-richieste');
+  if(wrap)wrap.innerHTML=renderTable(filtered);
+  if(ultime)ultime.innerHTML=renderTable(tutteRichieste,5);
+}
+
+async function eliminaRichiesta(id){if(!confirm('Eliminare questa richiesta?'))return;try{await apiDel(`/api/richieste/${id}`);toast('Richiesta eliminata');utente=await apiGet('/api/me');aggiornaStat();caricaRichieste();}catch(e){toast(e.message,'error');}}
+
+function aggiornaTipo(){const t=document.getElementById('tipo-richiesta').value;document.getElementById('ore-group').classList.toggle('hidden',t!=='permesso');calcolaGiorni();}
+
+async function calcolaGiorni(){
+  const inizio=document.getElementById('data-inizio').value,fine=document.getElementById('data-fine').value,tipo=document.getElementById('tipo-richiesta').value;
+  const box=document.getElementById('giorni-calcolati');
+  if(!inizio||!fine||fine<inizio){box.classList.add('hidden');return;}
+  document.getElementById('data-fine').min=inizio;
+  if(tipo==='permesso'){const ore=parseFloat(document.getElementById('ore-permesso').value);box.className='alert alert-info mt-3';box.innerHTML=`📋 Permesso di <strong>${ore} ore</strong> (${(ore/8).toFixed(2)} giornate)`;box.classList.remove('hidden');return;}
+  try{const{giorni}=await apiGet(`/api/calcola-giorni?inizio=${inizio}&fine=${fine}`);if(giorni>0){box.className=`alert ${giorni>(utente?.ferie_rimanenti||99)?'alert-warning':'alert-info'} mt-3`;box.innerHTML=`📋 <strong>${fmtGiorni(giorni)}</strong> lavorativi`;}else{box.className='alert alert-warning mt-3';box.innerHTML='⚠️ Nessun giorno lavorativo nel periodo';}box.classList.remove('hidden');}catch(e){}
+}
+
+async function inviaRichiesta(){
+  const tipo=document.getElementById('tipo-richiesta').value,inizio=document.getElementById('data-inizio').value,fine=document.getElementById('data-fine').value,ore=document.getElementById('ore-permesso').value,note=document.getElementById('note-richiesta').value;
+  const msgEl=document.getElementById('msg-richiesta'),btn=document.getElementById('btn-invia');
+  msgEl.innerHTML='';btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Invio...';
+  try{
+    const res=await apiPost('/api/richieste',{tipo,data_inizio:inizio,data_fine:fine,ore_permesso:tipo==='permesso'?ore:null,note});
+    closeModal('modal-richiesta');
+    toast(res.queued?'⏳ Salvato offline — verrà inviato quando torni connesso':`✓ Richiesta inviata! (${fmtGiorni(res.giorni)})`,res.queued?'warning':'success');
+    utente=await apiGet('/api/me');aggiornaStat();caricaRichieste();if(calendar)calendar.refetchEvents();
+  }catch(e){msgEl.innerHTML=`<div class="alert alert-error">${e.message}</div>`;}
+  finally{btn.disabled=false;btn.innerHTML='Invia richiesta';}
+}
+
+function showPage(page){
+  document.querySelectorAll('[id^="page-"]').forEach(el=>el.classList.add('hidden'));
+  document.getElementById(`page-${page}`).classList.remove('hidden');
+  setActiveNav(page);
+  if(page==='calendario'&&!calendar)initCalendar();
+  if(page==='richieste')caricaRichieste();
+  if(page==='profilo')caricaProfilo();
+}
+
+function initCalendar(){
+  calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
+    locale:'it',initialView:'dayGridMonth',
+    headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,listMonth'},
+    events:async(info,success)=>success(await apiGet(`/api/calendario?start=${info.startStr.slice(0,10)}&end=${info.endStr.slice(0,10)}`)),
+    eventClick:info=>{const e=info.event;if(e.extendedProps.tipo==='festivita')return;alert(`${e.title}\n${fmtData(e.startStr)}${e.end?' → '+fmtData(new Date(e.end.getTime()-86400000).toISOString().slice(0,10)):''}`);}
+    ,dayMaxEvents:4,height:650
+  });
+  calendar.render();
+}
+
+async function caricaProfilo(){
+  document.getElementById('profilo-info').innerHTML=`<div style="display:grid;gap:.8rem"><div><span class="text-xs text-grigio">Nome</span><div class="font-semibold">${utente.nome} ${utente.cognome}</div></div><div><span class="text-xs text-grigio">Username</span><div class="font-semibold">${utente.username}</div></div><div><span class="text-xs text-grigio">Reparto</span><div class="font-semibold">${utente.reparto||'-'}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem"><div style="background:#dbeafe;padding:1rem;border-radius:8px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#1e40af">${Math.max(0,utente.ferie_rimanenti||0).toFixed(1).replace('.0','')}</div><div style="font-size:.78rem;color:#1e40af">Ferie residue</div></div><div style="background:#ede9fe;padding:1rem;border-radius:8px;text-align:center"><div style="font-size:1.6rem;font-weight:700;color:#6d28d9">${Math.max(0,utente.permesso_rimanenti||0).toFixed(1).replace('.0','')}</div><div style="font-size:.78rem;color:#6d28d9">Permessi residui</div></div></div></div>`;
+}
+
+async function cambiaPassword(){
+  const v=document.getElementById('pwd-vecchia').value,n=document.getElementById('pwd-nuova').value,c=document.getElementById('pwd-conferma').value;
+  const msg=document.getElementById('msg-password');
+  try{await apiPost('/api/cambio-password',{vecchia:v,nuova:n,conferma:c});msg.innerHTML='<div class="alert alert-success">✓ Password aggiornata</div>';['pwd-vecchia','pwd-nuova','pwd-conferma'].forEach(id=>document.getElementById(id).value='');}
+  catch(e){msg.innerHTML=`<div class="alert alert-error">${e.message}</div>`;}
+}
+
+init();
+</script>
+</body>
+</html>
